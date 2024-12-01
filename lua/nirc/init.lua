@@ -11,7 +11,7 @@ function M.setup(opts)
   opts = opts or {}
 
   if not opts.nickname or not opts.username or not opts.realname then
-    error("You must provide a nickname, username, and realname")
+    error "You must provide a nickname, username, and realname"
     return
   end
   password = opts.password or "none"
@@ -37,7 +37,7 @@ end
 -- Function to show the contents of the message buffer
 function M.show_buf()
   local buf = create_output_buf()
-  vim.cmd("split")
+  vim.cmd "split"
   vim.api.nvim_set_current_buf(buf)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, message_buffer)
   vim.bo[buf].modifiable = false
@@ -46,11 +46,11 @@ end
 -- Function to send a message via the IRC client
 function M.send_message()
   if not client then
-    log_message("Not connected to the server")
+    log_message "Not connected to the server"
     return
   end
 
-  local message = vim.fn.input("Enter message: ")
+  local message = vim.fn.input "Enter message: "
   if message ~= "" then
     client:write(message .. "\r\n")
     log_message("You: " .. message)
@@ -60,11 +60,11 @@ end
 -- Function to join an IRC channel
 function M.join_channel()
   if not client then
-    log_message("Not connected to the server")
+    log_message "Not connected to the server"
     return
   end
 
-  local channel = vim.fn.input("Enter channel to join (e.g., #channel): ")
+  local channel = vim.fn.input "Enter channel to join (e.g., #channel): "
   if channel ~= "" then
     client:write("JOIN " .. channel .. "\r\n")
     log_message("Joined channel: " .. channel)
@@ -74,11 +74,11 @@ end
 -- Function to send custom IRC commands
 function M.send_command()
   if not client then
-    log_message("Not connected to the server")
+    log_message "Not connected to the server"
     return
   end
 
-  local command = vim.fn.input("Enter IRC command: ")
+  local command = vim.fn.input "Enter IRC command: "
   if command ~= "" then
     client:write(command .. "\r\n")
     log_message("Sent command: " .. command)
@@ -89,7 +89,7 @@ local function create_tcp_client(host, port, on_data_callback)
   local tcp_client = uv.new_tcp()
 
   if not tcp_client then
-    log_message("Failed to create TCP client")
+    log_message "Failed to create TCP client"
     return
   end
 
@@ -99,7 +99,7 @@ local function create_tcp_client(host, port, on_data_callback)
       on_data_callback(tcp_client, data)
     else
       tcp_client:close()
-      log_message("Connection closed")
+      log_message "Connection closed"
     end
   end
 
@@ -116,7 +116,7 @@ local function init_irc(tcp_client)
   tcp_client:write("PASS " .. password .. "\r\n")
   tcp_client:write("NICK " .. nickname .. "\r\n")
   tcp_client:write("USER " .. username .. " 0 * :" .. realname .. "\r\n")
-  log_message("Initialized IRC client")
+  log_message "Initialized IRC client"
 end
 
 local function handle_irc_message(tcp_client, data)
@@ -128,7 +128,7 @@ end
 
 uv.getaddrinfo("irc.freenode.net", nil, { family = "inet" }, function(err, res)
   if not res then
-    log_message("Failed to resolve DNS")
+    log_message "Failed to resolve DNS"
     return
   end
 
@@ -137,7 +137,7 @@ uv.getaddrinfo("irc.freenode.net", nil, { family = "inet" }, function(err, res)
   else
     local ip = res[1].addr
     if not ip then
-      log_message("Failed to resolve IP")
+      log_message "Failed to resolve IP"
       return
     end
 
@@ -150,4 +150,3 @@ uv.getaddrinfo("irc.freenode.net", nil, { family = "inet" }, function(err, res)
 end)
 
 return M
-
